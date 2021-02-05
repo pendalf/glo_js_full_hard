@@ -9,17 +9,17 @@
 ·        Текущий день - жирным шрифтом(использовать объект даты)
 */
 
-const week = ['Понедельник', 'вторник', 'среда', 'четверг', 'пятница', 'суббота', 'воскресенье'];
+const week = ['воскресенье', 'понедельник', 'вторник', 'среда', 'четверг', 'пятница', 'суббота'];
 
 week.forEach(function(item, i) {
     const br = document.createElement('br');
     const today = new Date();
     const weekDayToday = today.getDay();
     console.log(weekDayToday);
-    if (i > 4) {
+    if (i === 0 || i === 6) {
         item = item.italics();
     }
-    if (i === weekDayToday - 1) {
+    if (i === weekDayToday) {
         item = item.bold();
     }
     document.body.insertAdjacentHTML('beforeend', item);
