@@ -35,9 +35,32 @@ eval("\nmodule.exports = function () {\n\treturn /[\\u001b\\u009b][[()#;?]*(?:[0
 /*!**********************!*\
   !*** ./src/index.js ***!
   \**********************/
-/***/ (() => {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-eval("\n\n//# sourceURL=webpack://glo_js_full/./src/index.js?");
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _modules_watcher__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./modules/watcher */ \"./src/modules/watcher.js\");\n/* harmony import */ var _modules_cards__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./modules/cards */ \"./src/modules/cards.js\");\n\n\n(0,_modules_watcher__WEBPACK_IMPORTED_MODULE_0__.default)();\nvar cards = new _modules_cards__WEBPACK_IMPORTED_MODULE_1__.default('.heroes');\ncards.init();\nvar cards1 = new _modules_cards__WEBPACK_IMPORTED_MODULE_1__.default('.heroes1');\ncards1.init();\nconsole.log(cards);\n\n//# sourceURL=webpack://glo_js_full/./src/index.js?");
+
+/***/ }),
+
+/***/ "./src/modules/cards.js":
+/*!******************************!*\
+  !*** ./src/modules/cards.js ***!
+  \******************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\nfunction _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }\n\nfunction _nonIterableSpread() { throw new TypeError(\"Invalid attempt to spread non-iterable instance.\\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.\"); }\n\nfunction _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === \"string\") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === \"Object\" && o.constructor) n = o.constructor.name; if (n === \"Map\" || n === \"Set\") return Array.from(o); if (n === \"Arguments\" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }\n\nfunction _iterableToArray(iter) { if (typeof Symbol !== \"undefined\" && Symbol.iterator in Object(iter)) return Array.from(iter); }\n\nfunction _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }\n\nfunction _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }\n\nfunction _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError(\"Cannot call a class as a function\"); } }\n\nfunction _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if (\"value\" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }\n\nfunction _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }\n\nvar Cards = /*#__PURE__*/function () {\n  function Cards(selector) {\n    _classCallCheck(this, Cards);\n\n    this.error = false;\n\n    if (!selector) {\n      this.error = 'Требуется передать селектор для инициализации';\n    } else {\n      this.cardsContainer = document.querySelector(selector);\n    }\n\n    if (!this.error && !this.cardsContainer) {\n      this.error = 'Элемент не найден на странице';\n    }\n  } // объект с карточками для всех экземпляров класса\n\n\n  _createClass(Cards, [{\n    key: \"init\",\n    value: function init() {\n      if (this.error) {\n        console.error(this.error);\n        return;\n      }\n\n      this.fields = new Set();\n      this.getData();\n    } // получение json с карточками\n\n  }, {\n    key: \"fetchHeroes\",\n    value: function fetchHeroes() {\n      return fetch('/dbHeroes.json').then(function (res) {\n        console.log(res);\n\n        if (res.status !== 200) {\n          throw new Error('Service is unavailable!');\n        }\n\n        return res.json();\n      });\n    }\n  }, {\n    key: \"getData\",\n    value: function getData() {\n      var _this = this;\n\n      if (!Cards.heroes.data && !Cards.fetching) {\n        Cards.fetching = true;\n        var heroes = this.fetchHeroes();\n        heroes.then(function (res) {\n          Cards.heroes.data = res;\n\n          _this.dataReceived();\n        })[\"catch\"](function (err) {\n          return console.error(err);\n        });\n      } else if (Cards.fetching) {\n        Cards.heroes.registerNewListener(function () {\n          return _this.dataReceived;\n        });\n      }\n    }\n  }, {\n    key: \"dataReceived\",\n    value: function dataReceived() {\n      var _this2 = this;\n\n      this.heroes = Cards.heroes.data;\n      this.heroes.forEach(function (card) {\n        return Object.keys(card).forEach(function (i) {\n          return _this2.fields.add(i);\n        });\n      });\n      this.render();\n    }\n  }, {\n    key: \"renderCard\",\n    value: function renderCard(card) {\n      var name = card.name,\n          species = card.species,\n          gender = card.gender,\n          birthDay = card.birthDay,\n          deathDay = card.deathDay,\n          status = card.status,\n          actors = card.actors,\n          photo = card.photo,\n          movies = card.movies,\n          realName = card.realName,\n          citizenship = card.citizenship;\n      var cardElement = document.createElement('div');\n      cardElement.className = 'heroes__card';\n      var output = '';\n      output += name ? \"<div class=\\\"heroes__card-item heroes__card-item--title\\\">\".concat(name, \"</div>\") : '';\n      output += photo ? \"<div class=\\\"heroes__card-item heroes__card-item--photo\\\"><img src=\\\"https://github.com/Quper24/dbHeroes/raw/master/\".concat(photo, \"\\\"\").concat(name ? ' title=\"' + name + '\"' : '', \"></div>\") : '';\n      output += realName ? \"<div class=\\\"heroes__card-item heroes__card-item--title\\\">Real name: \".concat(realName, \"</div>\") : '';\n      output += species ? \"<div class=\\\"heroes__card-item heroes__card-item--title\\\">Species: \".concat(species, \"</div>\") : '';\n      output += gender ? \"<div class=\\\"heroes__card-item heroes__card-item--title\\\">Gender: \".concat(gender, \"</div>\") : '';\n      output += citizenship ? \"<div class=\\\"heroes__card-item heroes__card-item--title\\\">Citizenship: \".concat(citizenship, \"</div>\") : '';\n      output += birthDay ? \"<div class=\\\"heroes__card-item heroes__card-item--title\\\">Date of birth: \".concat(birthDay, \"</div>\") : '';\n      output += deathDay ? \"<div class=\\\"heroes__card-item heroes__card-item--title\\\">Date of death: \".concat(deathDay, \"</div>\") : '';\n      output += status ? \"<div class=\\\"heroes__card-item heroes__card-item--title\\\">\\u0421\\u0442\\u0430\\u0442\\u0443\\u0441: \".concat(status, \"</div>\") : '';\n      output += actors ? \"<div class=\\\"heroes__card-item heroes__card-item--title\\\">Actors: \".concat(actors, \"</div>\") : '';\n      output += movies ? \"<div class=\\\"heroes__card-item heroes__card-item--title\\\">Movies: \".concat(movies, \"</div>\") : '';\n      cardElement.innerHTML = output;\n      return cardElement;\n    }\n  }, {\n    key: \"renderCards\",\n    value: function renderCards(list) {\n      var _this3 = this,\n          _this$cardsContainer;\n\n      var cards = list.map(function (card) {\n        return _this3.renderCard(card);\n      });\n\n      (_this$cardsContainer = this.cardsContainer).append.apply(_this$cardsContainer, _toConsumableArray(cards));\n    }\n  }, {\n    key: \"render\",\n    value: function render() {\n      this.renderCards(this.heroes);\n      console.log(this.fields);\n    }\n  }]);\n\n  return Cards;\n}();\n\nCards.heroes = {\n  _data: null,\n\n  get data() {\n    return this._data;\n  },\n\n  set data(val) {\n    this._data = val;\n    this.dataListener(val);\n  },\n\n  dataListener: function dataListener(val) {},\n  registerNewListener: function registerNewListener(externalListenerFunction) {\n    this.dataListener = externalListenerFunction;\n  }\n};\nCards.fetching = false;\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Cards);\n\n//# sourceURL=webpack://glo_js_full/./src/modules/cards.js?");
+
+/***/ }),
+
+/***/ "./src/modules/watcher.js":
+/*!********************************!*\
+  !*** ./src/modules/watcher.js ***!
+  \********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\nvar watcher = function watcher() {\n  // object.watch\n  if (!Object.prototype.watch) {\n    Object.defineProperty(Object.prototype, \"watch\", {\n      enumerable: false,\n      configurable: true,\n      writable: false,\n      value: function value(prop, handler) {\n        var oldval = this[prop],\n            newval = oldval,\n            getter = function getter() {\n          return newval;\n        },\n            setter = function setter(val) {\n          oldval = newval;\n          return newval = handler.call(this, prop, oldval, val);\n        };\n\n        if (delete this[prop]) {\n          // can't watch constants\n          Object.defineProperty(this, prop, {\n            get: getter,\n            set: setter,\n            enumerable: true,\n            configurable: true\n          });\n        }\n      }\n    });\n  } // object.unwatch\n\n\n  if (!Object.prototype.unwatch) {\n    Object.defineProperty(Object.prototype, \"unwatch\", {\n      enumerable: false,\n      configurable: true,\n      writable: false,\n      value: function value(prop) {\n        var val = this[prop];\n        delete this[prop]; // remove accessors\n\n        this[prop] = val;\n      }\n    });\n  }\n};\n\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (watcher);\n\n//# sourceURL=webpack://glo_js_full/./src/modules/watcher.js?");
 
 /***/ }),
 
@@ -411,6 +434,18 @@ eval("var map = {\n\t\"./log\": \"./node_modules/webpack/hot/log.js\"\n};\n\n\nf
 /******/ 	__webpack_require__.i = [];
 /******/ 	
 /************************************************************************/
+/******/ 	/* webpack/runtime/define property getters */
+/******/ 	(() => {
+/******/ 		// define getter functions for harmony exports
+/******/ 		__webpack_require__.d = (exports, definition) => {
+/******/ 			for(var key in definition) {
+/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
+/******/ 			}
+/******/ 		};
+/******/ 	})();
+/******/ 	
 /******/ 	/* webpack/runtime/get javascript update chunk filename */
 /******/ 	(() => {
 /******/ 		// This function allow to reference all chunks
@@ -427,7 +462,7 @@ eval("var map = {\n\t\"./log\": \"./node_modules/webpack/hot/log.js\"\n};\n\n\nf
 /******/ 	
 /******/ 	/* webpack/runtime/getFullHash */
 /******/ 	(() => {
-/******/ 		__webpack_require__.h = () => ("e9c22e51d47c8f54fd9f")
+/******/ 		__webpack_require__.h = () => ("8200fb545dca690b9190")
 /******/ 	})();
 /******/ 	
 /******/ 	/* webpack/runtime/global */
@@ -490,6 +525,17 @@ eval("var map = {\n\t\"./log\": \"./node_modules/webpack/hot/log.js\"\n};\n\n\nf
 /******/ 			script.onerror = onScriptComplete.bind(null, script.onerror);
 /******/ 			script.onload = onScriptComplete.bind(null, script.onload);
 /******/ 			needAttach && document.head.appendChild(script);
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/make namespace object */
+/******/ 	(() => {
+/******/ 		// define __esModule on exports
+/******/ 		__webpack_require__.r = (exports) => {
+/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 			}
+/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
 /******/ 		};
 /******/ 	})();
 /******/ 	
