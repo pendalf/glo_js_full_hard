@@ -1,4 +1,5 @@
 const path = require('path');
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 module.exports = {
     entry: './src/index.js',
@@ -8,23 +9,39 @@ module.exports = {
     },
     mode: 'production',
     module: {
-        rules: [{
-            test: /\.js$/,
-            use: {
-                loader: 'babel-loader',
-                options: {
-                    presets: ['@babel/env'],
-                    plugins: [
-                        [
-                            '@babel/plugin-proposal-class-properties',
-                            {
-                                'loose': true
-                            }
+        rules: [
+
+            {
+                test: /\.js$/,
+                use: {
+                    loader: 'babel-loader',
+                    options: {
+                        presets: ['@babel/env'],
+                        plugins: [
+                            [
+                                '@babel/plugin-proposal-class-properties',
+                                {
+                                    'loose': true
+                                }
+                            ]
                         ]
-                    ]
-                }
+                    }
+                },
+                exclude: /node_modules/,
             },
-            exclude: /node_modules/,
-        }]
-    }
+            {
+                test: /\.css$/,
+                use: [
+                    MiniCssExtractPlugin.loader,
+                    "css-loader", "postcss-loader",
+                ],
+            }
+        ]
+    },
+    plugins: [
+        new MiniCssExtractPlugin({
+            filename: "styles.css",
+            chunkFilename: "styles.css"
+        })
+    ]
 };
