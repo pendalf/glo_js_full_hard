@@ -7,7 +7,15 @@ class Cards {
             this.cardsContainer = document.querySelector(selector);
         }
         if (!this.error && !this.cardsContainer) {
-            this.error = 'Элемент не найден на странице';
+            this.error = `Элемент '${selector}' не найден на странице`;
+        }
+        if (!this.error) {
+            this.fields = new Set();
+            this.movies = new Set();
+            // this.
+            this.heroesList = document.createElement('div');
+            this.heroesList.className = "grid grid-cols-4 gap-4";
+            this.filters = document.createElement('div');
         }
     }
 
@@ -31,7 +39,8 @@ class Cards {
             console.error(this.error);
             return;
         }
-        this.fields = new Set();
+        this.cardsContainer.append(this.filters);
+        this.cardsContainer.append(this.heroesList);
         this.getData();
     }
 
@@ -39,7 +48,6 @@ class Cards {
     fetchHeroes() {
         return fetch('/dbHeroes.json')
             .then(res => {
-                console.log(res);
                 if (res.status !== 200) {
                     throw new Error('Service is unavailable!');
                 }
@@ -58,13 +66,18 @@ class Cards {
                 })
                 .catch(err => console.error(err));
         } else if (Cards.fetching) {
-            Cards.heroes.registerNewListener(() => this.dataReceived);
+            Cards.heroes.registerNewListener(() => this.dataReceived());
         }
     }
 
     dataReceived() {
         this.heroes = Cards.heroes.data;
-        this.heroes.forEach(card => Object.keys(card).forEach(i => this.fields.add(i)));
+        this.heroes.forEach(card => {
+            Object.keys(card).forEach(i => this.fields.add(i));
+            if (card.movies && card.movies.length) {
+                card.movies.forEach(i => this.movies.add(i));
+            }
+        });
         this.render();
     }
 
@@ -88,8 +101,11 @@ class Cards {
 
         let output = '';
         output += name ? `<div class="heroes__card-item heroes__card-item--title">${name}</div>` : '';
-        output += photo ? `<div class="heroes__card-item heroes__card-item--photo"><img src="https://github.com/Quper24/dbHeroes/raw/master/${photo}"${name ?
-            ' title="' + name + '"' : ''}></div>` : '';
+        output += photo ? `
+            <div class="heroes__card-item heroes__card-item--photo overflow-hidden relative" style="padding-bottom: 125%">
+                <img class="absolute top-0 right-0 left-0" src="https://github.com/Quper24/dbHeroes/raw/master/${photo}"${name ?
+    ' title="' + name + '"' : ''}>
+            </div>` : '';
         output += realName ?
             `<div class="heroes__card-item heroes__card-item--title">Real name: ${realName}</div>` : '';
         output += species ? `<div class="heroes__card-item heroes__card-item--title">Species: ${species}</div>` : '';
@@ -108,12 +124,14 @@ class Cards {
 
     renderCards(list) {
         const cards = list.map(card => this.renderCard(card));
-        this.cardsContainer.append(...cards);
+        this.heroesList.innerHTML = '';
+        this.heroesList.append(...cards);
     }
 
     render() {
         this.renderCards(this.heroes);
         console.log(this.fields);
+        console.log(this.movies);
     }
 
 }
