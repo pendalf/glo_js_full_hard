@@ -12,7 +12,8 @@ class Cards {
         if (!this.error) {
             this.fields = new Set();
             this.movies = new Set();
-            // this.
+            this.search = new Set();
+            this.paddingImg = 125;
             this.heroesList = document.createElement('div');
             this.heroesList.className = "grid grid-cols-4 gap-4";
             this.filters = document.createElement('div');
@@ -92,16 +93,48 @@ class Cards {
         return select;
     }
 
+    renderChekbox(name) {
+
+        const { label, checked } = name instanceof Object ? name : { checked: false, label: name };
+        const checkbox = `<div class="heroes__form-item">
+                <label><input class="heroes__checkbox" type="checkbox" value="${label}"${checked ? ' checked' : ''}>${this.camelToNorm(label)}</label>
+            </div>`;
+        return checkbox;
+    }
+
     renderFilterMovies() {
-        const items = [...this.movies].sort(),
-            select = this.renderSelect({
+        const items = [...this.movies].sort().reverse();
+        items.push('--Choose film--');
+        items.reverse();
+
+        const select = this.renderSelect({
             classes: 'filter-movie',
             items,
             attributes: {
                 name: 'filterMovie',
             }
-            });
+        });
         return select;
+    }
+
+    renderSearch() {
+        let search = `<div class="heroes__search">`;
+        search += `<div class="relative"> <input type="text" class="heroes__search-input h-14 w-96 pr-8 pl-5 rounded z-0 focus:shadow focus:outline-none" placeholder="Search anything...">`;
+        search += `<div class="absolute top-4 right-3"> <i class="fa fa-search text-gray-400 z-20 hover:text-gray-500"></i> </div>`;
+        search += `</div>`;
+        search += `<div class="heroes__search-extra">`;
+        [...this.fields].forEach(i => {
+            if (i === 'name' || i === 'realName') {
+                this.search.add(i);
+                i = {
+                    checked: true,
+                    label: i
+                };
+            }
+            search += this.renderChekbox(i);
+        });
+        search += `</div></div>`;
+        this.filters.insertAdjacentHTML('beforeend', search);
     }
 
     renderFilters() {
@@ -142,7 +175,7 @@ class Cards {
         let output = '';
         output += name ? `<div class="heroes__card-item heroes__card-item--title">${name}</div>` : '';
         output += photo ? `
-            <div class="heroes__card-item heroes__card-item--photo overflow-hidden relative" style="padding-bottom: 125%">
+            <div class="heroes__card-item heroes__card-item--photo overflow-hidden relative" style="padding-bottom: ${this.paddingImg}%">
                 <img class="absolute top-0 right-0 left-0" src="https://github.com/Quper24/dbHeroes/raw/master/${photo}"${name ?
     ' title="' + name + '"' : ''}>
             </div>` : '';
@@ -169,11 +202,30 @@ class Cards {
     }
 
     filteringByMovie(movie) {
-        const cards = this.heroes.filter(i => i.movies ? i.movies.filter(i => i === movie).length : null)
+        const cards = this.heroes.filter(i => (i.movies ? i.movies.filter(i => i === movie).length : null));
         this.renderCards(cards);
     }
 
+    camelToNorm(word) {
+        return word.replace(/([A-Z])/g, ' $1').toLowerCase();
+    }
+
+    searchHandler(e) {
+        const target = e.target,
+            phrase = target.value,
+            regexp = new RegExp(`(${phrase})`, 'gi'),
+            search = [...this.heroes].map(i => ({ ...i })).filter(i => [...this.search].filter(s => {
+                if (regexp.test(i[s])) {
+                    i[s] = i[s] && phrase !== '' ? i[s].replace(regexp, '<b>$1</b>') : i[s];
+                    return true;
+                }
+            }).length);
+        this.renderCards(search);
+
+    }
+
     render() {
+        this.renderSearch();
         this.renderFilters();
         this.renderCards(this.heroes);
         console.log(this.fields);
@@ -185,11 +237,18 @@ class Cards {
         if (target.classList.contains('filter-movie')) {
             this.filteringByMovie(target.value);
         }
+        if (target.classList.contains('heroes__checkbox')) {
+            if (target.checked) {
+                this.search.add(target.value);
+            } else {
+                this.search.delete(target.value);
+            }
+        }
     }
 
     handlers() {
         this.cardsContainer.addEventListener('change', this.changeHandler.bind(this));
-        
+        this.cardsContainer.addEventListener('input', this.searchHandler.bind(this));
     }
 
 }
