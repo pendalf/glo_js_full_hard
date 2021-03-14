@@ -42,6 +42,7 @@ class Cards {
         this.cardsContainer.append(this.filters);
         this.cardsContainer.append(this.heroesList);
         this.getData();
+
     }
 
     // получение json с карточками
@@ -70,6 +71,44 @@ class Cards {
         }
     }
 
+    renderSelect(settings) {
+        const select = document.createElement('select'),
+            {
+                items,
+                classes,
+                attributes
+            } = settings;
+
+        if (attributes) {
+            Object.entries(attributes).forEach(([k, v]) => select.setAttribute(k, v));
+        }
+        if (classes) {
+            select.classList.add(classes);
+        }
+        if (items?.length) {
+            items.forEach(i => select.insertAdjacentHTML('beforeend', `<option value="${i}">${i}</option>`));
+        }
+
+        return select;
+    }
+
+    renderFilterMovies() {
+        const items = [...this.movies].sort(),
+            select = this.renderSelect({
+            classes: 'filter-movie',
+            items,
+            attributes: {
+                name: 'filterMovie',
+            }
+            });
+        return select;
+    }
+
+    renderFilters() {
+        const moviesSelect = this.renderFilterMovies();
+        this.filters.append(moviesSelect);
+    }
+
     dataReceived() {
         this.heroes = Cards.heroes.data;
         this.heroes.forEach(card => {
@@ -79,6 +118,7 @@ class Cards {
             }
         });
         this.render();
+        this.handlers();
     }
 
     renderCard(card) {
@@ -128,10 +168,28 @@ class Cards {
         this.heroesList.append(...cards);
     }
 
+    filteringByMovie(movie) {
+        const cards = this.heroes.filter(i => i.movies ? i.movies.filter(i => i === movie).length : null)
+        this.renderCards(cards);
+    }
+
     render() {
+        this.renderFilters();
         this.renderCards(this.heroes);
         console.log(this.fields);
         console.log(this.movies);
+    }
+
+    changeHandler(e) {
+        const target = e.target;
+        if (target.classList.contains('filter-movie')) {
+            this.filteringByMovie(target.value);
+        }
+    }
+
+    handlers() {
+        this.cardsContainer.addEventListener('change', this.changeHandler.bind(this));
+        
     }
 
 }
