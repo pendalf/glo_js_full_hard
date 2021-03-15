@@ -5,6 +5,7 @@ class Cards {
      * [ ] - Исправить работу фильтра по фильмам при переключении на "--Choose film--"
      * [ ] - поиск по фильмам
      * [ ] - сворачивание фильмов
+     * [ ] - добавить сортировку
      * [ ] - добавить конвертацию картинок при помощи js
      */
 
@@ -24,9 +25,9 @@ class Cards {
             this.search = new Set();
             this.paddingImg = 125;
             this.heroesList = document.createElement('div');
-            this.heroesList.className = "grid grid-cols-5 gap-5";
+            this.heroesList.className = "grid grid-cols-1 3xl:grid-cols-6 2xl:grid-cols-5 gap-5 xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-3 sm:grid-cols-2 smm:grid-cols-1";
             this.filters = document.createElement('div');
-            this.filters.className = 'heroes__filters flex justify-between';
+            this.filters.className = 'heroes__filters flex justify-between flex-col lg:flex-row mb-6';
             this.id = Cards.count;
         }
     }
@@ -140,14 +141,14 @@ class Cards {
                 id: `filter-movie-${this.id}`
             }
         });
-        selectWraper.className = 'heroes__filter-movie-wrapper';
+        selectWraper.className = 'heroes__filter-movie-wrapper mt-6';
         selectWraper.innerHTML = `<label for="filter-movie-${this.id}" class="mr-4">Filter by movie</label>`;
         selectWraper.append(select);
         return selectWraper;
     }
 
     renderSearch() {
-        let search = `<div class="heroes__search flex-grow max-w-3xl mr-5">`;
+        let search = `<div class="heroes__search flex-grow max-w-3xl mr-5 mt-6">`;
         search += `<div class="relative">`;
         search += `<input type="text" class="heroes__search-input h-14 pr-16 pl-5 rounded w-full z-0 focus:shadow focus:outline-none" placeholder="Search anything...">`;
         search += `<div class="absolute top-4 right-3"> <i class="fa fa-search text-gray-400 z-20 "></i> </div>`;
@@ -166,11 +167,14 @@ class Cards {
             search += this.renderChekbox(i);
         });
         search += `</div></div>`;
-        this.filters.insertAdjacentHTML('beforeend', search);
+
+        return search;
     }
 
     renderFilters() {
-        const moviesSelect = this.renderFilterMovies();
+        const moviesSelect = this.renderFilterMovies(),
+            search = this.renderSearch();
+        this.filters.insertAdjacentHTML('beforeend', search);
         this.filters.append(moviesSelect);
     }
 
@@ -285,7 +289,9 @@ class Cards {
         } else {
             close.classList.add('hidden');
         }
-        this.renderCards(search);
+        setTimeout(() => {
+            this.renderCards(search);
+        }, 0);
 
     }
 
@@ -304,7 +310,6 @@ class Cards {
     }
 
     render() {
-        this.renderSearch();
         this.renderFilters();
         this.renderCards(this.heroes);
         console.log(this.fields);
