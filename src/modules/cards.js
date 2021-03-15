@@ -3,6 +3,9 @@ class Cards {
      * TODO:
      * [ ] - исправить работу поиска при отключении всех фильтров
      * [ ] - Исправить работу фильтра по фильмам при переключении на "--Choose film--"
+     * [ ] - поиск по фильмам
+     * [ ] - сворачивание фильмов
+     * [ ] - добавить конвертацию картинок при помощи js
      */
 
     constructor(selector) {
@@ -199,25 +202,52 @@ class Cards {
 
         } = card;
         const cardElement = document.createElement('div');
-        cardElement.className = 'heroes__card';
+        cardElement.className = 'heroes__card overflow-hidden rounded-3xl bg-black bg-opacity-80 shadow-lg';
 
         let output = '';
-        output += name ? `<div class="heroes__card-item heroes__card-item--title">${name}</div>` : '';
+        output += photo ? `<div class="heroes__card-promo relative overflow-hidden rounded-3xl">` : '';
         output += photo ? `
             <div class="heroes__card-item heroes__card-item--photo overflow-hidden relative" style="padding-bottom: ${this.paddingImg}%">
                 <img class="absolute top-0 right-0 left-0" src="https://github.com/Quper24/dbHeroes/raw/master/${photo}"${name ?
     ' title="' + name + '"' : ''}>
             </div>` : '';
+        output += photo ? `<div class="heroes__card-promo-summary 
+                absolute bottom-0 left-0 right-0 text-center text-blue-100 uppercase px-8 pb-4 pt-10
+                bg-gradient-to-b from-transparent via-black to-black divide-y divide-blue-100
+            ">` : '<div class="heroes__card-summary py-4 px-8 text-blue-100  divide-y divide-blue-100">';
+        output += name ? `<div class="heroes__card-item heroes__card-item--title py-2">${name}</div>` : '';
         output += realName ?
-            `<div class="heroes__card-item heroes__card-item--title">Real name: ${realName}</div>` : '';
-        output += species ? `<div class="heroes__card-item heroes__card-item--title">Species: ${species}</div>` : '';
-        output += gender ? `<div class="heroes__card-item heroes__card-item--title">Gender: ${gender}</div>` : '';
-        output += citizenship ? `<div class="heroes__card-item heroes__card-item--title">Citizenship: ${citizenship}</div>` : '';
-        output += birthDay ? `<div class="heroes__card-item heroes__card-item--title">Date of birth: ${birthDay}</div>` : '';
-        output += deathDay ? `<div class="heroes__card-item heroes__card-item--title">Date of death: ${deathDay}</div>` : '';
-        output += status ? `<div class="heroes__card-item heroes__card-item--title">Статус: ${status}</div>` : '';
-        output += actors ? `<div class="heroes__card-item heroes__card-item--title">Actors: ${actors}</div>` : '';
-        output += movies ? `<div class="heroes__card-item heroes__card-item--title">Movies: ${movies}</div>` : '';
+            `<div class="heroes__card-item heroes__card-item--title py-2">${realName}</div>` : '';
+        output += photo ? `</div>` : ''; // .heroes__card-promo-summary
+        output += photo ? `</div>` : ''; // .heroes__card-promo
+
+
+        output += photo ? `<div class="heroes__card-summary py-4 px-8 text-blue-100 divide-y divide-blue-100">` : '';
+        output += species ? `<div class="heroes__card-item heroes__card-item--title py-2" title="Species">
+            <i class="fa fa-smile-beam z-20 mr-2"></i>
+            ${species}</div>` : '';
+        output += gender ? `<div class="heroes__card-item heroes__card-item--title py-2" title="Gender">
+            <i class="fa fa-venus-mars z-20 mr-2"></i>
+            ${gender}</div>` : '';
+        output += citizenship ? `<div class="heroes__card-item heroes__card-item--title py-2" title="Citizenship">
+            <i class="fa fa-id-card z-20 mr-2"></i>
+            ${citizenship}</div>` : '';
+        output += birthDay ? `<div class="heroes__card-item heroes__card-item--title py-2" title="Date of birth">
+            <i class="fa fa-birthday-cake z-20 mr-2"></i>
+            ${birthDay}</div>` : '';
+        output += deathDay ? `<div class="heroes__card-item heroes__card-item--title py-2" title="Date of death">
+            <i class="fa fa-skull-crossbones z-20 mr-2"></i>
+            ${deathDay}</div>` : '';
+        output += status ? `<div class="heroes__card-item heroes__card-item--title py-2" title="Status">
+            <i class="fa fa-file-alt z-20 mr-2"></i>
+            ${status}</div>` : '';
+        output += actors ? `<div class="heroes__card-item heroes__card-item--title py-2" title="Actors">
+            <i class="fa fa-theater-masks z-20 mr-2"></i>
+            ${actors}</div>` : '';
+        output += movies ? `<div class="heroes__card-item heroes__card-item--title py-2" title="Movies">
+            <i class="fa fa-film z-20 mr-2"></i>
+            ${movies.join(', ')}</div>` : '';
+        output += photo ? `</div>` : ''; // .heroes__card-summary
 
         cardElement.innerHTML = output;
 
