@@ -2,8 +2,8 @@ class Cards {
     /**
      * TODO:
      * [x] - исправить работу поиска при отключении всех фильтров
-     * [ ] - Исправить работу фильтра по фильмам при переключении на "--Choose film--"
-     * [ ] - поиск по фильмам
+     * [x] - Исправить работу фильтра по фильмам при переключении на "--Choose film--"
+     * [x] - поиск по фильмам
      * [ ] - сворачивание фильмов
      * [ ] - добавить сортировку
      * [ ] - добавить конвертацию картинок при помощи js
@@ -274,16 +274,29 @@ class Cards {
         return word.replace(/([A-Z])/g, ' $1').toLowerCase();
     }
 
+    searchTest(phrase, item) {
+        const regexp = new RegExp(`(${phrase})`, 'gi');
+        return regexp.test(item) ? item && phrase !== '' ? item.replace(regexp, '<b>$1</b>') : item : false;
+    }
+
     searchHandler(e) {
-        console.log(e);
         const target = e.target,
             close = this.filters.querySelector('.heroes__search-close'),
             phrase = target.value,
-            regexp = new RegExp(`(${phrase})`, 'gi'),
             search = [...this.heroes].map(i => ({ ...i })).filter(i => [...this.search].filter(s => {
-                if (regexp.test(i[s])) {
-                    i[s] = i[s] && phrase !== '' ? i[s].replace(regexp, '<b>$1</b>') : i[s];
-                    return true;
+                if (typeof i[s] !== 'object') {
+                    const test = this.searchTest(phrase, i[s]);
+                    i[s] = test ? test : i[s];
+                    return test;
+                } else {
+                    const test = i[s].map(i => this.searchTest(phrase, i));
+                    i[s] = [...i[s]];
+                    test.forEach((el, j) => {
+                        if (el) {
+                            i[s][j] = el;
+                        }
+                    });
+                    return test.filter(i => i).length;
                 }
             }).length);
 
@@ -326,8 +339,6 @@ class Cards {
     render() {
         this.renderFilters();
         this.renderStart();
-        console.log(this.fields);
-        console.log(this.movies);
     }
 
     changeHandler(e) {
