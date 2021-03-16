@@ -1,7 +1,7 @@
 class Cards {
     /**
      * TODO:
-     * [ ] - исправить работу поиска при отключении всех фильтров
+     * [x] - исправить работу поиска при отключении всех фильтров
      * [ ] - Исправить работу фильтра по фильмам при переключении на "--Choose film--"
      * [ ] - поиск по фильмам
      * [ ] - сворачивание фильмов
@@ -29,6 +29,7 @@ class Cards {
             this.filters = document.createElement('div');
             this.filters.className = 'heroes__filters flex justify-between flex-col lg:flex-row mb-6';
             this.id = Cards.count;
+            this.filterMovieFirstOption = '-- Choose film --';
         }
     }
 
@@ -130,7 +131,7 @@ class Cards {
     renderFilterMovies() {
         const items = [...this.movies].sort().reverse();
         const selectWraper = document.createElement('div');
-        items.push('--Choose film--');
+        items.push(this.filterMovieFirstOption);
         items.reverse();
 
         const select = this.renderSelect({
@@ -274,6 +275,7 @@ class Cards {
     }
 
     searchHandler(e) {
+        console.log(e);
         const target = e.target,
             close = this.filters.querySelector('.heroes__search-close'),
             phrase = target.value,
@@ -284,15 +286,23 @@ class Cards {
                     return true;
                 }
             }).length);
+
         if (phrase) {
             close.classList.remove('hidden');
         } else {
+            this.renderStart();
             close.classList.add('hidden');
         }
         setTimeout(() => {
             this.renderCards(search);
         }, 0);
+    }
 
+    inputHandler(e) {
+        const target = e.target;
+        if (target.classList.contains('heroes__search-input')) {
+            this.searchHandler(e);
+        }
     }
 
     clickHandler(e) {
@@ -309,9 +319,13 @@ class Cards {
         }
     }
 
+    renderStart() {
+        this.renderCards(this.heroes);
+    }
+
     render() {
         this.renderFilters();
-        this.renderCards(this.heroes);
+        this.renderStart();
         console.log(this.fields);
         console.log(this.movies);
     }
@@ -319,7 +333,11 @@ class Cards {
     changeHandler(e) {
         const target = e.target;
         if (target.classList.contains('filter-movie')) {
-            this.filteringByMovie(target.value);
+            if (target.value === this.filterMovieFirstOption) {
+                this.renderStart();
+            } else {
+                this.filteringByMovie(target.value);
+            }
         }
         if (target.classList.contains('heroes__checkbox')) {
             if (target.checked) {
@@ -332,7 +350,7 @@ class Cards {
 
     handlers() {
         this.cardsContainer.addEventListener('change', this.changeHandler.bind(this));
-        this.cardsContainer.addEventListener('input', this.searchHandler.bind(this));
+        this.cardsContainer.addEventListener('input', this.inputHandler.bind(this));
         this.cardsContainer.addEventListener('click', this.clickHandler.bind(this));
     }
 
