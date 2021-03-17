@@ -1,3 +1,5 @@
+import imageResize from './imageResize';
+
 class Cards {
     /**
      * TODO:
@@ -23,6 +25,9 @@ class Cards {
             this.fields = new Set();
             this.movies = new Set();
             this.search = new Set();
+            this.images = new Map();
+            this.canvas = new Map();
+            this.colWidth = 400;
             this.paddingImg = 125;
             this.heroesList = document.createElement('div');
             this.heroesList.className = "grid grid-cols-1 3xl:grid-cols-6 2xl:grid-cols-5 gap-5 xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-3 sm:grid-cols-2 smm:grid-cols-1";
@@ -191,6 +196,38 @@ class Cards {
         this.handlers();
     }
 
+    generateKey() {
+        return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+    }
+
+    renderCanvas(e) {
+        const url = e.target.src;
+        imageResize({
+            link: 'url',
+            elem: this.canvas.get(url),
+            img: this.images.get(url),
+            MAX_WIDTH: this.colWidth,
+            MAX_HEIGHT: 10000
+        });
+    }
+
+    lazyLoad(photoUrl, name) {
+        if (!this.images.get(photoUrl)) {
+            const img = new Image(),
+                canvas = document.createElement('canvas');
+
+            img.src = photoUrl;
+            img.addEventListener('load', this.renderCanvas.bind(this));
+
+            canvas.className = 'absolute top-0 right-0 left-0 max-w-full';
+            canvas.dataset.src = photoUrl;
+            canvas.title = name ? name : '';
+
+            this.images.set(photoUrl, img);
+            this.canvas.set(photoUrl, canvas);
+        }
+    }
+
     renderCard(card) {
         const {
             name,
@@ -206,15 +243,19 @@ class Cards {
             citizenship,
 
         } = card;
-        const cardElement = document.createElement('div');
+        const cardElement = document.createElement('div'),
+            photoUrl = `https://github.com/Quper24/dbHeroes/raw/master/${photo}`;
+
+        this.lazyLoad(photoUrl, name);
+
+
         cardElement.className = 'heroes__card overflow-hidden rounded-3xl bg-black bg-opacity-80 shadow-lg';
 
         let output = '';
         output += photo ? `<div class="heroes__card-promo relative overflow-hidden rounded-3xl">` : '';
         output += photo ? `
             <div class="heroes__card-item heroes__card-item--photo overflow-hidden relative" style="padding-bottom: ${this.paddingImg}%">
-                <img class="absolute top-0 right-0 left-0" src="https://github.com/Quper24/dbHeroes/raw/master/${photo}"${name ?
-    ' title="' + name + '"' : ''}>
+
             </div>` : '';
         output += photo ? `<div class="heroes__card-promo-summary 
                 absolute bottom-0 left-0 right-0 text-center text-blue-100 uppercase px-8 pb-4 pt-10
@@ -255,6 +296,8 @@ class Cards {
         output += photo ? `</div>` : ''; // .heroes__card-summary
 
         cardElement.innerHTML = output;
+
+        cardElement.querySelector('.heroes__card-item--photo').append(this.canvas.get(photoUrl));
 
         return cardElement;
     }
@@ -339,6 +382,7 @@ class Cards {
     render() {
         this.renderFilters();
         this.renderStart();
+        this.setColWidth();
     }
 
     changeHandler(e) {
@@ -359,10 +403,15 @@ class Cards {
         }
     }
 
+    setColWidth() {
+        this.colWidth = document.querySelector('.heroes__card').clientWidth;
+    }
+
     handlers() {
         this.cardsContainer.addEventListener('change', this.changeHandler.bind(this));
         this.cardsContainer.addEventListener('input', this.inputHandler.bind(this));
         this.cardsContainer.addEventListener('click', this.clickHandler.bind(this));
+        window.addEventListener('resize', this.setColWidth.bind(this));
     }
 
 }

@@ -7,6 +7,7 @@ import '@fortawesome/fontawesome-free/js/brands';
 import watcher from './modules/watcher';
 import Cards from './modules/cards';
 
+
 watcher();
 
 const cards = new Cards('.heroes');
