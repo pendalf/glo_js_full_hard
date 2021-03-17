@@ -8,7 +8,8 @@ class Cards {
      * [x] - поиск по фильмам
      * [ ] - сворачивание фильмов
      * [ ] - добавить сортировку
-     * [ ] - добавить конвертацию картинок при помощи js
+     * [x] - добавить конвертацию картинок при помощи js
+     * [ ] - реализовать хранение карточек в localStorage
      */
 
     constructor(selector) {
@@ -92,10 +93,16 @@ class Cards {
                 })
                 .catch(err => console.error(err));
         } else if (Cards.fetching) {
+            /**
+             * если есть несколько экземпляров класса и началась загрущка данных,
+             * то вешается слушатель на обнволение статического свойства класса
+             *
+             */
             Cards.heroes.registerNewListener(() => this.dataReceived());
         }
     }
 
+    // рендер селекта
     renderSelect(settings) {
         const select = document.createElement('select'),
             {
@@ -121,6 +128,7 @@ class Cards {
         return select;
     }
 
+    // рендер чекбокса
     renderChekbox(name) {
 
         const { label, checked } = name instanceof Object ? name : { checked: false, label: name };
@@ -133,6 +141,7 @@ class Cards {
         return checkbox;
     }
 
+    // рендер фильтра по фильмам
     renderFilterMovies() {
         const items = [...this.movies].sort().reverse();
         const selectWraper = document.createElement('div');
@@ -153,6 +162,7 @@ class Cards {
         return selectWraper;
     }
 
+    // рендер блока поиска
     renderSearch() {
         let search = `<div class="heroes__search flex-grow max-w-3xl mr-5 mt-6">`;
         search += `<div class="relative">`;
@@ -177,6 +187,7 @@ class Cards {
         return search;
     }
 
+    // рендер секции с фильтрами
     renderFilters() {
         const moviesSelect = this.renderFilterMovies(),
             search = this.renderSearch();
@@ -184,6 +195,17 @@ class Cards {
         this.filters.append(moviesSelect);
     }
 
+    // рендер картинок в canvas
+    renderCanvas(e) {
+        const url = e.target.src;
+        imageResize({
+            elem: this.canvas.get(url),
+            img: this.images.get(url),
+            MAX_WIDTH: this.colWidth
+        });
+    }
+
+    // функция для выполнения операций после получения данных
     dataReceived() {
         this.heroes = Cards.heroes.data;
         this.heroes.forEach(card => {
@@ -200,16 +222,16 @@ class Cards {
         return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
     }
 
-    renderCanvas(e) {
-        const url = e.target.src;
-        imageResize({
-            elem: this.canvas.get(url),
-            img: this.images.get(url),
-            MAX_WIDTH: this.colWidth
-        });
+    preloaderStar() {
+        return `<div class="loader loader-2">
+            <svg class="loader-star" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1">
+                    <polygon points="29.8 0.3 22.8 21.8 0 21.8 18.5 35.2 11.5 56.7 29.8 43.4 48.2 56.7 41.2 35.1 59.6 21.8 36.8 21.8 " fill="#dbeafe" />
+                </svg>
+            <div class="loader-circles"></div>
+        </div>`;
     }
 
-    lazyLoad(photoUrl, name) {
+    lazyLoad(photoUrl, name, i) {
         if (!this.images.get(photoUrl)) {
             const img = new Image(),
                 canvas = document.createElement('canvas');
@@ -221,12 +243,21 @@ class Cards {
             canvas.dataset.src = photoUrl;
             canvas.title = name ? name : '';
 
-            this.images.set(photoUrl, img);
+            if (i < 12) {
+                this.images.set(photoUrl, img);
+            } else {
+                setTimeout(() => {
+                    this.images.set(photoUrl, img);
+                }, 0);
+            }
+
             this.canvas.set(photoUrl, canvas);
         }
     }
 
-    renderCard(card) {
+    // рендер карточки героя
+
+    renderCard(card, i) {
         const {
             name,
             species,
@@ -244,7 +275,7 @@ class Cards {
         const cardElement = document.createElement('div'),
             photoUrl = `https://github.com/Quper24/dbHeroes/raw/master/${photo}`;
 
-        this.lazyLoad(photoUrl, name);
+        this.lazyLoad(photoUrl, name, i);
 
 
         cardElement.className = 'heroes__card overflow-hidden rounded-3xl bg-black bg-opacity-80 shadow-lg';
@@ -253,7 +284,7 @@ class Cards {
         output += photo ? `<div class="heroes__card-promo relative overflow-hidden rounded-3xl">` : '';
         output += photo ? `
             <div class="heroes__card-item heroes__card-item--photo overflow-hidden relative" style="padding-bottom: ${this.paddingImg}%">
-
+            ${this.preloaderStar()}
             </div>` : '';
         output += photo ? `<div class="heroes__card-promo-summary 
                 absolute bottom-0 left-0 right-0 text-center text-blue-100 uppercase px-8 pb-4 pt-10
@@ -301,7 +332,7 @@ class Cards {
     }
 
     renderCards(list) {
-        const cards = list.map(card => this.renderCard(card));
+        const cards = list.map((card, i) => this.renderCard(card, i));
         this.heroesList.innerHTML = '';
         this.heroesList.append(...cards);
     }
