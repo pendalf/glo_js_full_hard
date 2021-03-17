@@ -798,6 +798,10 @@ video {
   max-width: 48rem;
 }
 
+.max-w-full {
+  max-width: 100%;
+}
+
 .min-h-screen {
   min-height: 100vh;
 }
@@ -884,6 +888,10 @@ video {
 
 .right-10 {
   right: 2.5rem;
+}
+
+.resize {
+  resize: both;
 }
 
 * {

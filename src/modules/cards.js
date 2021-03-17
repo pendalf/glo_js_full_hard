@@ -203,11 +203,9 @@ class Cards {
     renderCanvas(e) {
         const url = e.target.src;
         imageResize({
-            link: 'url',
             elem: this.canvas.get(url),
             img: this.images.get(url),
-            MAX_WIDTH: this.colWidth,
-            MAX_HEIGHT: 10000
+            MAX_WIDTH: this.colWidth
         });
     }
 
@@ -404,7 +402,20 @@ class Cards {
     }
 
     setColWidth() {
-        this.colWidth = document.querySelector('.heroes__card').clientWidth;
+        const card = document.querySelector('.heroes__card'),
+            canvas = card.querySelector('canvas');
+        this.colWidth = card.clientWidth;
+        if (canvas.width < this.colWidth) {
+            // this.images = new Map();
+            [...this.canvas.entries()].forEach(([k, v]) => {
+                imageResize({
+                    elem: v,
+                    img: this.images.get(k),
+                    MAX_WIDTH: this.colWidth
+                });
+            });
+            // this.canvas.keys().forEach(k => console.log(k));
+        }
     }
 
     handlers() {
