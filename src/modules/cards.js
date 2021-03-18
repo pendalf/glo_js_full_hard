@@ -1,4 +1,5 @@
 import imageResize from './imageResize';
+import cookie from './cookies';
 
 class Cards {
     /**
@@ -42,6 +43,7 @@ class Cards {
             this.hidePromoVar = false;
             this.dataLoaded = false;
             this.mode = 'hover'; // hover, static
+            this.cookie = false;
         }
     }
 
@@ -62,7 +64,6 @@ class Cards {
         return Cards._counter;
     }
 
-
     // отслеживаем запуск fetch
     static fetching = false
 
@@ -82,6 +83,22 @@ class Cards {
 
     }
 
+    // Добалвение в localStorage
+    setLocalstorage(list) {
+        localStorage.heroes = JSON.stringify(list);
+    }
+
+    // удаление из localStorage
+    removeLocalStorage() {
+        localStorage.removeItem('heroes');
+    }
+
+    // проверка наличия куки для подгрузки данных
+    getHeroesLoaded() {
+        const heroesLoaded = cookie.get('heroes-loaded');
+        this.cookie = !!heroesLoaded;
+    }
+
     // получение json с карточками
     fetchHeroes() {
         return fetch('/dbHeroes.json')
@@ -93,13 +110,24 @@ class Cards {
             });
     }
 
+    // Получение данных из localStorage или с сервера
     getData() {
+        this.getHeroesLoaded();
+        if (this.cookie && localStorage.heroes) {
+            Cards.heroes.data = JSON.parse(localStorage.heroes);
+            this.dataReceived();
+            return;
+        }
         if (!Cards.heroes.data && !Cards.fetching) {
             Cards.fetching = true;
             const heroes = this.fetchHeroes();
             heroes
                 .then(res => {
+                    cookie.set('heroes-loaded', true, {
+                        'max-age': 3600 * 24
+                    });
                     Cards.heroes.data = res;
+                    this.setLocalstorage(res);
                     this.dataReceived();
                 })
                 .catch(err => console.error(err));
