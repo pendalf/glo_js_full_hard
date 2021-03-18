@@ -42,7 +42,8 @@ module.exports = {
                     MiniCssExtractPlugin.loader,
                     "css-loader", "postcss-loader",
                 ],
-            }
+            },
+            { test: /\.(png|woff|woff2|eot|ttf|svg)$/, use: ['url-loader?limit=100000'] }
         ]
     },
     plugins: [

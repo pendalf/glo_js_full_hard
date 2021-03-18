@@ -36,6 +36,10 @@ class Cards {
             this.filters.className = 'heroes__filters flex justify-between flex-col lg:flex-row mb-6';
             this.id = Cards.count;
             this.filterMovieFirstOption = '-- Choose film --';
+            this.imgsContainer = document.createElement('div');
+            this.imgsContainer.className = 'absolute w-0 h-0 hidden';
+            this.hidePromoVar = false;
+            this.dataLoaded = false;
         }
     }
 
@@ -65,6 +69,8 @@ class Cards {
             console.error(this.error);
             return;
         }
+        this.promo();
+        this.cardsContainer.append(this.imgsContainer);
         this.cardsContainer.append(this.filters);
         this.cardsContainer.append(this.heroesList);
         this.getData();
@@ -197,16 +203,19 @@ class Cards {
 
     // рендер картинок в canvas
     renderCanvas(e) {
-        const url = e.target.src;
-        imageResize({
-            elem: this.canvas.get(url),
-            img: this.images.get(url),
-            MAX_WIDTH: this.colWidth
-        });
+        if (e.target.tagName.toLowerCase() === 'img') {
+            const url = e.target.src;
+            imageResize({
+                elem: this.canvas.get(url),
+                img: this.images.get(url),
+                MAX_WIDTH: this.colWidth
+            });
+        }
     }
 
     // функция для выполнения операций после получения данных
     dataReceived() {
+        this.dataLoaded = true;
         this.heroes = Cards.heroes.data;
         this.heroes.forEach(card => {
             Object.keys(card).forEach(i => this.fields.add(i));
@@ -216,12 +225,14 @@ class Cards {
         });
         this.render();
         this.handlers();
+        this.hidePromo();
     }
 
     generateKey() {
         return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
     }
 
+    // прелоадер для фото
     preloaderStar() {
         return `<div class="loader loader-2">
             <svg class="loader-star" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1">
@@ -237,7 +248,8 @@ class Cards {
                 canvas = document.createElement('canvas');
 
             img.src = photoUrl;
-            img.addEventListener('load', this.renderCanvas.bind(this));
+            // img.addEventListener('load', this.renderCanvas.bind(this));
+            this.imgsContainer.append(img);
 
             canvas.className = 'absolute top-0 right-0 left-0 max-w-full';
             canvas.dataset.src = photoUrl;
@@ -274,8 +286,6 @@ class Cards {
         } = card;
         const cardElement = document.createElement('div'),
             photoUrl = `https://github.com/Quper24/dbHeroes/raw/master/${photo}`;
-
-        this.lazyLoad(photoUrl, name, i);
 
 
         cardElement.className = 'heroes__card overflow-hidden rounded-3xl bg-black bg-opacity-80 shadow-lg';
@@ -326,7 +336,10 @@ class Cards {
 
         cardElement.innerHTML = output;
 
-        cardElement.querySelector('.heroes__card-item--photo').append(this.canvas.get(photoUrl));
+        setTimeout(() => {
+            this.lazyLoad(photoUrl, name, i);
+            cardElement.querySelector('.heroes__card-item--photo').append(this.canvas.get(photoUrl));
+        }, 0);
 
         return cardElement;
     }
@@ -411,7 +424,7 @@ class Cards {
     render() {
         this.renderFilters();
         this.renderStart();
-        this.setColWidth();
+        // this.setColWidth();
     }
 
     changeHandler(e) {
@@ -449,11 +462,69 @@ class Cards {
         }
     }
 
+    getPromo() {
+        return `<div class="heroes__promo fixed top-0 left-0 right-0 bottom-0 overflow-hidden">
+            <div class="flex bg-black absolute w-1/2 top-0 left-0 bottom-0 justify-end items-center transition-all duration-700">
+                <canvas class=" transition-all duration-500 max-w-0" id="promo-canvas-l-${this.id}"></canvas>
+            </div>
+            <div class="flex bg-black absolute w-1/2 top-0 right-0 bottom-0 justify-start items-center transition-all duration-700">
+                <canvas class=" transition-all duration-500 max-w-0" id="promo-canvas-r-${this.id}"></canvas>
+            </div>
+        </div>`;
+    }
+
+    hidePromo() {
+        if (this.dataLoaded && this.hidePromoVar) {
+            const promo = document.querySelector('.heroes__promo');
+            promo.children[0].classList.add('-left-1/2');
+            promo.children[1].classList.add('-right-1/2');
+            setTimeout(() => {
+                promo.classList.add('hidden');
+            }, 1000);
+        }
+    }
+
+    promo() {
+        const promo = this.getPromo();
+        document.body.insertAdjacentHTML('beforeend', promo);
+
+        window.addEventListener('load', () => {
+
+            const canvasL = document.getElementById(`promo-canvas-l-${this.id}`);
+            const canvasR = document.getElementById(`promo-canvas-r-${this.id}`);
+            this.promoCanvasRender(canvasL, 'left');
+            this.promoCanvasRender(canvasR, 'right');
+            setTimeout(() => {
+                this.hidePromoVar = true;
+                this.hidePromo();
+            }, 2000);
+        });
+
+    }
+
+    promoCanvasRender(canvas, part) {
+        canvas.width = 302;
+        canvas.height = 104;
+        const ctx = canvas.getContext('2d');
+        const x = part ? (part === 'left' ? canvas.width : 0) : canvas.width / 2;
+        ctx.font = "72px Elephantmen Aged";
+        ctx.fillStyle = "#dbeafe";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText('Heroes', x, 36);
+        ctx.font = "32px Elephantmen Aged";
+        ctx.fillText('will show up soon', x, 88);
+
+        canvas.classList.add('max-w-full');
+    }
+
     handlers() {
         this.cardsContainer.addEventListener('change', this.changeHandler.bind(this));
         this.cardsContainer.addEventListener('input', this.inputHandler.bind(this));
         this.cardsContainer.addEventListener('click', this.clickHandler.bind(this));
+        this.cardsContainer.addEventListener('load', this.renderCanvas.bind(this), true);
         window.addEventListener('resize', this.setColWidth.bind(this));
+        this.hidePromo();
     }
 
 }

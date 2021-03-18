@@ -1,6 +1,20 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/*
+*/
+
+@font-face {
+    font-family: 'Elephantmen Aged';
+    src: url('./fonts/Elephantmen-Aged/Elephantmen-Aged.woff') format('woff');
+}
+
+h1 {
+    font-family: 'Elephantmen Aged';
+    color: #421a7b;
+}
+
 .loader {
     position: absolute;
     width: 60px;
