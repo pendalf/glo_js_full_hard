@@ -7,10 +7,10 @@ class Cards {
      * [x] - исправить работу поиска при отключении всех фильтров
      * [x] - Исправить работу фильтра по фильмам при переключении на "--Choose film--"
      * [x] - поиск по фильмам
-     * [ ] - сворачивание фильмов
+     * [x] - сворачивание фильмов
      * [ ] - добавить сортировку
      * [x] - добавить конвертацию картинок при помощи js
-     * [ ] - реализовать хранение карточек в localStorage
+     * [x] - реализовать хранение карточек в localStorage
      * [x] - оформить страницу до старта JS
      */
 
@@ -291,6 +291,10 @@ class Cards {
         </div>`;
     }
 
+    /**
+     * Отложенная загрузка фото и отрисовка при помощи canvas с ресайзом картинки
+     * для оптимизации назгрузки при отрисовке
+     */
     lazyLoad(photoUrl, name, i) {
         if (!this.images.get(photoUrl)) {
             const img = new Image(),
@@ -317,7 +321,6 @@ class Cards {
     }
 
     // рендер карточки героя
-
     renderCard(card, i) {
         const {
             name,
@@ -393,26 +396,31 @@ class Cards {
         return cardElement;
     }
 
+    // рендер списка карточек
     renderCards(list) {
         const cards = list.map((card, i) => this.renderCard(card, i));
         this.heroesList.innerHTML = '';
         this.heroesList.append(...cards);
     }
 
+    // фильтрация по фильму
     filteringByMovie(movie) {
         const cards = this.heroes.filter(i => (i.movies ? i.movies.filter(i => i === movie).length : null));
         this.renderCards(cards);
     }
 
+    // перевод camelCase в обычный вид записи
     camelToNorm(word) {
         return word.replace(/([A-Z])/g, ' $1').toLowerCase();
     }
 
+    // Посик по строке регулярным выражением
     searchTest(phrase, item) {
         const regexp = new RegExp(`(${phrase})`, 'gi');
         return regexp.test(item) ? item && phrase !== '' ? item.replace(regexp, '<b>$1</b>') : item : false;
     }
 
+    // Обработчик события input поля поиска
     searchHandler(e) {
         const target = e.target,
             close = this.filters.querySelector('.heroes__search-close'),
@@ -445,6 +453,7 @@ class Cards {
         }, 0);
     }
 
+    // Диспетчер событий input
     inputHandler(e) {
         const target = e.target;
         if (target.classList.contains('heroes__search-input')) {
@@ -452,6 +461,7 @@ class Cards {
         }
     }
 
+    // Диспетчер событий click
     clickHandler(e) {
         const target = e.target;
         if (target.closest('.heroes__search-close')) {
@@ -477,16 +487,7 @@ class Cards {
         }
     }
 
-    renderStart() {
-        this.renderCards(this.heroes);
-    }
-
-    render() {
-        this.renderFilters();
-        this.renderStart();
-        // this.setColWidth();
-    }
-
+    // Диспетчер событий change
     changeHandler(e) {
         const target = e.target;
         if (target.classList.contains('filter-movie')) {
@@ -505,6 +506,7 @@ class Cards {
         }
     }
 
+    // Диспетчер событий mouseenter
     mouseenterHandler(e) {
         const target = e.target;
         if (this.mode === 'hover' && target.classList.contains('heroes__card')) {
@@ -512,6 +514,7 @@ class Cards {
         }
     }
 
+    // Диспетчер событий mouseleave
     mouseleaveHandler(e) {
         const target = e.target;
         if (this.mode === 'hover' && target.classList.contains('heroes__card')) {
@@ -521,12 +524,24 @@ class Cards {
         }
     }
 
+    // Отрисовка карточек
+    renderStart() {
+        this.renderCards(this.heroes);
+    }
+
+    // первоначальная отрисовка страницы
+    render() {
+        this.renderFilters();
+        this.renderStart();
+        // this.setColWidth();
+    }
+
+    // определение ширины ячейки с карточками и перерисовка картинок если новая ширина ячейки больше текущей картинки
     setColWidth() {
         const card = document.querySelector('.heroes__card'),
             canvas = card.querySelector('canvas');
         this.colWidth = card.clientWidth;
         if (canvas.width < this.colWidth) {
-            // this.images = new Map();
             [...this.canvas.entries()].forEach(([k, v]) => {
                 imageResize({
                     elem: v,
@@ -534,10 +549,10 @@ class Cards {
                     MAX_WIDTH: this.colWidth
                 });
             });
-            // this.canvas.keys().forEach(k => console.log(k));
         }
     }
 
+    // html блка промо
     getPromo() {
         return `<div class="heroes__promo fixed top-0 left-0 right-0 bottom-0 overflow-hidden z-50">
             <div class="flex bg-black absolute w-1/2 top-0 left-0 bottom-0 justify-end items-center transition-all duration-700">
@@ -549,6 +564,7 @@ class Cards {
         </div>`;
     }
 
+    // скрытие блока промо
     hidePromo() {
         if (this.dataLoaded && this.hidePromoVar) {
             const promo = document.querySelector('.heroes__promo');
@@ -560,6 +576,7 @@ class Cards {
         }
     }
 
+    // добавление блока промо на страницу и действия над ним
     promo() {
         const promo = this.getPromo();
         document.body.classList.remove('bg-black');
@@ -579,6 +596,7 @@ class Cards {
 
     }
 
+    // рендер надписи в блоке промо
     promoCanvasRender(canvas, part) {
         canvas.width = 302;
         canvas.height = 104;
@@ -595,6 +613,7 @@ class Cards {
         canvas.classList.add('max-w-full');
     }
 
+    // обработчики событий
     handlers() {
         this.cardsContainer.addEventListener('change', this.changeHandler.bind(this));
         this.cardsContainer.addEventListener('input', this.inputHandler.bind(this));
@@ -603,7 +622,6 @@ class Cards {
         this.cardsContainer.addEventListener('mouseenter', this.mouseenterHandler.bind(this), true);
         this.cardsContainer.addEventListener('mouseleave', this.mouseleaveHandler.bind(this), true);
         window.addEventListener('resize', this.setColWidth.bind(this));
-        this.hidePromo();
     }
 
 }
