@@ -205,12 +205,14 @@ class Cards {
     // рендер картинок в canvas
     renderCanvas(e) {
         if (e.target.tagName.toLowerCase() === 'img') {
-            const url = e.target.src;
+            const url = e.target.src,
+                canvas = this.canvas.get(url);
             imageResize({
-                elem: this.canvas.get(url),
+                elem: canvas,
                 img: this.images.get(url),
                 MAX_WIDTH: this.colWidth
             });
+            canvas.parentNode.querySelector('loader').remove();
         }
     }
 
