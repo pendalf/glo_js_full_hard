@@ -156,7 +156,7 @@ class Cards {
         items.reverse();
 
         const select = this.renderSelect({
-            classes: 'filter-movie form-select h-14 pr-5 pl-5 rounded z-0 focus:shadow focus:outline-none',
+            classes: 'filter-movie form-select w-full sm:w-auto h-14 pr-5 pl-5 rounded z-0 focus:shadow focus:outline-none',
             items,
             attributes: {
                 name: `filter-movie-${this.id}`,
@@ -164,21 +164,21 @@ class Cards {
             }
         });
         selectWraper.className = 'heroes__filter-movie-wrapper mt-6';
-        selectWraper.innerHTML = `<label for="filter-movie-${this.id}" class="mr-4">Filter by movie</label>`;
+        selectWraper.innerHTML = `<label for="filter-movie-${this.id}" class="inline-block mr-4 mb-4 lg:mb-0">Filter by movie</label>`;
         selectWraper.append(select);
         return selectWraper;
     }
 
     // рендер блока поиска
     renderSearch() {
-        let search = `<div class="heroes__search flex-grow max-w-3xl mr-5 mt-6">`;
+        let search = `<div class="heroes__search flex-grow max-w-3xl lg:mr-5 mt-6">`;
         search += `<div class="relative">`;
         search += `<input type="text" class="heroes__search-input h-14 pr-16 pl-5 rounded w-full z-0 focus:shadow focus:outline-none" placeholder="Search anything...">`;
         search += `<div class="absolute top-4 right-3"> <i class="fa fa-search text-gray-400 z-20 "></i> </div>`;
         search += `<div class="heroes__search-close absolute top-4 right-10 hidden cursor-pointer"> <i class="fa fa-times-circle text-gray-400 z-20 hover:text-gray-500"></i> </div>`;
         search += `</div>`;
-        search += `<button class="heroes__search-advanced focus:outline-none cursor-pointer hover:underline mt-2 mb-2">Advanced search</button>`;
-        search += `<div class="heroes__search-extra grid grid-cols-4 gap-3 overflow-hidden transition-all max-h-0 duration-700">`;
+        search += `<button class="heroes__search-advanced focus:outline-none cursor-pointer hover:underline mt-4 mb-2">Advanced search</button>`;
+        search += `<div class="heroes__search-extra grid grid-cols-2 sm:grid-cols-4 gap-3 overflow-hidden transition-all max-h-0 duration-700">`;
         [...this.fields].forEach(i => {
             if (i === 'name' || i === 'realName') {
                 this.search.add(i);
@@ -499,7 +499,7 @@ class Cards {
             setTimeout(() => {
                 this.hidePromoVar = true;
                 this.hidePromo();
-            }, 2000);
+            }, 3000);
         });
 
     }
