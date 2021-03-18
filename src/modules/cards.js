@@ -10,6 +10,7 @@ class Cards {
      * [ ] - добавить сортировку
      * [x] - добавить конвертацию картинок при помощи js
      * [ ] - реализовать хранение карточек в localStorage
+     * [x] - оформить страницу до старта JS
      */
 
     constructor(selector) {
@@ -486,6 +487,7 @@ class Cards {
 
     promo() {
         const promo = this.getPromo();
+        document.body.classList.remove('bg-black');
         document.body.insertAdjacentHTML('beforeend', promo);
 
         window.addEventListener('load', () => {
