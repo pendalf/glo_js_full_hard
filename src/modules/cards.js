@@ -32,15 +32,16 @@ class Cards {
             this.colWidth = 400;
             this.paddingImg = 125;
             this.heroesList = document.createElement('div');
-            this.heroesList.className = "grid grid-cols-1 3xl:grid-cols-6 2xl:grid-cols-5 gap-5 xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-3 sm:grid-cols-2 smm:grid-cols-1";
+            this.heroesList.className = "heroes__cards grid grid-cols-1 3xl:grid-cols-6 2xl:grid-cols-5 gap-5 xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-3 sm:grid-cols-2 smm:grid-cols-1";
             this.filters = document.createElement('div');
-            this.filters.className = 'heroes__filters flex justify-between flex-col lg:flex-row mb-6';
+            this.filters.className = 'heroes__filters relative flex justify-between flex-col lg:flex-row mb-6';
             this.id = Cards.count;
             this.filterMovieFirstOption = '-- Choose film --';
             this.imgsContainer = document.createElement('div');
             this.imgsContainer.className = 'absolute w-0 h-0 hidden';
             this.hidePromoVar = false;
             this.dataLoaded = false;
+            this.mode = 'hover'; // hover, static
         }
     }
 
@@ -74,6 +75,9 @@ class Cards {
         this.cardsContainer.append(this.imgsContainer);
         this.cardsContainer.append(this.filters);
         this.cardsContainer.append(this.heroesList);
+        if (true) {
+            this.heroesList.classList.add('heroes__cards--actions');
+        }
         this.getData();
 
     }
@@ -200,6 +204,20 @@ class Cards {
             search = this.renderSearch();
         this.filters.insertAdjacentHTML('beforeend', search);
         this.filters.append(moviesSelect);
+        this.filters.insertAdjacentHTML('beforeend',
+            `<div class="heroes__mode-switcher sm:absolute bottom-0 right-0 mt-4 float-right" title="Toggle hero description">
+                <i class="fa fa-list-alt text-gray-400 z-20 transition-all  cursor-pointer text-2xl"></i>
+            </div>`
+        );
+        const svgInterval = setInterval(() => {
+            const path = this.filters.querySelector('.heroes__mode-switcher path');
+            if (path) {
+                path.classList.add('transition-all');
+                path.classList.add('duration-300');
+                clearInterval(svgInterval);
+            }
+            // console.log(this.filters.querySelector('.heroes__mode-switcher svg'));
+        }, 10);
     }
 
     // рендер картинок в canvas
@@ -212,7 +230,7 @@ class Cards {
                 img: this.images.get(url),
                 MAX_WIDTH: this.colWidth
             });
-            canvas.parentNode.querySelector('loader').remove();
+            canvas.parentNode.querySelector('.loader').remove();
         }
     }
 
@@ -291,10 +309,10 @@ class Cards {
             photoUrl = `https://github.com/Quper24/dbHeroes/raw/master/${photo}`;
 
 
-        cardElement.className = 'heroes__card overflow-hidden rounded-3xl bg-black bg-opacity-80 shadow-lg';
+        cardElement.className = 'heroes__card relative rounded-3xl bg-black bg-opacity-801 bg-gray-700 shadow-lg';
 
         let output = '';
-        output += photo ? `<div class="heroes__card-promo relative overflow-hidden rounded-3xl">` : '';
+        output += photo ? `<div class="heroes__card-promo relative overflow-hidden rounded-3xl z-20">` : '';
         output += photo ? `
             <div class="heroes__card-item heroes__card-item--photo overflow-hidden relative" style="padding-bottom: ${this.paddingImg}%">
             ${this.preloaderStar()}
@@ -302,7 +320,7 @@ class Cards {
         output += photo ? `<div class="heroes__card-promo-summary 
                 absolute bottom-0 left-0 right-0 text-center text-blue-100 uppercase px-8 pb-4 pt-10
                 bg-gradient-to-b from-transparent via-black to-black divide-y divide-blue-100
-            ">` : '<div class="heroes__card-summary py-4 px-8 text-blue-100  divide-y divide-blue-100">';
+            ">` : '<div class="heroes__card-summary pb-4 pt-14 px-8 text-blue-100  divide-y divide-blue-100">';
         output += name ? `<div class="heroes__card-item heroes__card-item--title py-2">${name}</div>` : '';
         output += realName ?
             `<div class="heroes__card-item heroes__card-item--title py-2">${realName}</div>` : '';
@@ -310,7 +328,7 @@ class Cards {
         output += photo ? `</div>` : ''; // .heroes__card-promo
 
 
-        output += photo ? `<div class="heroes__card-summary py-4 px-8 text-blue-100 divide-y divide-blue-100">` : '';
+        output += photo ? `<div class="heroes__card-summary pb-4 pt-14 px-8 text-blue-100 divide-y divide-blue-100">` : '';
         output += species ? `<div class="heroes__card-item heroes__card-item--title py-2" title="Species">
             <i class="fa fa-smile-beam z-20 mr-2"></i>
             ${species}</div>` : '';
@@ -418,6 +436,17 @@ class Cards {
             const advanced = this.filters.querySelector('.heroes__search-extra');
             advanced.classList.toggle('max-h-screen');
         }
+        if (target.closest('.heroes__mode-switcher')) {
+            target.classList.toggle('text-black');
+            this.mode = this.mode === 'hover' ? 'static' : 'hover';
+            this.heroesList.classList.toggle('heroes__cards--actions');
+            if (this.mode === 'hover') {
+                this.heroesList.classList.add('heroes__cards--processing');
+                setTimeout(() => {
+                    this.heroesList.classList.remove('heroes__cards--processing');
+                }, 500);
+            }
+        }
     }
 
     renderStart() {
@@ -448,6 +477,22 @@ class Cards {
         }
     }
 
+    mouseenterHandler(e) {
+        const target = e.target;
+        if (this.mode === 'hover' && target.classList.contains('heroes__card')) {
+            target.classList.add('hover');
+        }
+    }
+
+    mouseleaveHandler(e) {
+        const target = e.target;
+        if (this.mode === 'hover' && target.classList.contains('heroes__card')) {
+            setTimeout(() => {
+                target.classList.remove('hover');
+            }, 1000);
+        }
+    }
+
     setColWidth() {
         const card = document.querySelector('.heroes__card'),
             canvas = card.querySelector('canvas');
@@ -466,7 +511,7 @@ class Cards {
     }
 
     getPromo() {
-        return `<div class="heroes__promo fixed top-0 left-0 right-0 bottom-0 overflow-hidden">
+        return `<div class="heroes__promo fixed top-0 left-0 right-0 bottom-0 overflow-hidden z-50">
             <div class="flex bg-black absolute w-1/2 top-0 left-0 bottom-0 justify-end items-center transition-all duration-700">
                 <canvas class=" transition-all duration-500 max-w-0" id="promo-canvas-l-${this.id}"></canvas>
             </div>
@@ -527,6 +572,8 @@ class Cards {
         this.cardsContainer.addEventListener('input', this.inputHandler.bind(this));
         this.cardsContainer.addEventListener('click', this.clickHandler.bind(this));
         this.cardsContainer.addEventListener('load', this.renderCanvas.bind(this), true);
+        this.cardsContainer.addEventListener('mouseenter', this.mouseenterHandler.bind(this), true);
+        this.cardsContainer.addEventListener('mouseleave', this.mouseleaveHandler.bind(this), true);
         window.addEventListener('resize', this.setColWidth.bind(this));
         this.hidePromo();
     }

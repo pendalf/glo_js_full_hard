@@ -521,6 +521,53 @@ video {
   height: auto;
 }
 
+.heroes__card .heroes__card-summary {
+  --tw-bg-opacity: 1;
+  background-color: rgba(55, 65, 81, var(--tw-bg-opacity));
+  border-radius: 1.5rem;
+  margin-top: -2.5rem;
+  max-height: 100vh;
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+  transition-duration: 500ms;
+}
+
+.heroes__cards--actions .heroes__card .heroes__card-summary {
+  box-sizing: border-box;
+  margin-bottom: 2.5rem;
+  max-height: 0px;
+  overflow: hidden;
+  padding-top: 0px;
+  padding-bottom: 0px;
+  position: absolute;
+  top: 100%;
+  width: 100%;
+}
+
+.heroes__cards--actions .heroes__card.hover {
+  z-index: 30;
+}
+
+.heroes__cards--actions .heroes__card:hover {
+  z-index: 50;
+}
+
+.heroes__cards--actions .heroes__card:hover .heroes__card-summary {
+  max-height: 100vh;
+  padding-bottom: 1rem;
+  padding-top: 3.5rem;
+}
+
+.heroes__cards--processing .heroes__card .heroes__card-summary {
+  margin-bottom: 2.5rem;
+  position: static;
+}
+
+/* h2 {
+    @apply text-xl;
+  } */
+
 .container {
   width: 100%;
 }
@@ -676,6 +723,11 @@ video {
   background-color: rgba(243, 244, 246, var(--tw-bg-opacity));
 }
 
+.bg-gray-700 {
+  --tw-bg-opacity: 1;
+  background-color: rgba(55, 65, 81, var(--tw-bg-opacity));
+}
+
 .bg-gradient-to-b {
   background-image: linear-gradient(to bottom, var(--tw-gradient-stops));
 }
@@ -691,10 +743,6 @@ video {
 
 .to-black {
   --tw-gradient-to: #000;
-}
-
-.bg-opacity-80 {
-  --tw-bg-opacity: 0.8;
 }
 
 .rounded {
@@ -753,12 +801,21 @@ video {
   flex-grow: 1;
 }
 
+.float-right {
+  float: right;
+}
+
 .h-0 {
   height: 0px;
 }
 
 .h-14 {
   height: 3.5rem;
+}
+
+.text-2xl {
+  font-size: 1.5rem;
+  line-height: 2rem;
 }
 
 .text-7xl {
@@ -845,11 +902,6 @@ video {
   padding-bottom: 0.5rem;
 }
 
-.py-4 {
-  padding-top: 1rem;
-  padding-bottom: 1rem;
-}
-
 .px-8 {
   padding-left: 2rem;
   padding-right: 2rem;
@@ -873,6 +925,10 @@ video {
 
 .pt-10 {
   padding-top: 2.5rem;
+}
+
+.pt-14 {
+  padding-top: 3.5rem;
 }
 
 .pr-16 {
@@ -962,6 +1018,11 @@ video {
   text-align: center;
 }
 
+.text-black {
+  --tw-text-opacity: 1;
+  color: rgba(0, 0, 0, var(--tw-text-opacity));
+}
+
 .text-gray-400 {
   --tw-text-opacity: 1;
   color: rgba(156, 163, 175, var(--tw-text-opacity));
@@ -1008,6 +1069,10 @@ video {
 
 .z-20 {
   z-index: 20;
+}
+
+.z-50 {
+  z-index: 50;
 }
 
 .gap-3 {
@@ -1229,6 +1294,10 @@ h1 {
 }
 
 @media (min-width: 640px) {
+  .sm\:absolute {
+    position: absolute;
+  }
+
   .sm\:w-auto {
     width: auto;
   }

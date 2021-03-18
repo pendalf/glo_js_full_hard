@@ -5,6 +5,30 @@
 /*
 */
 
+@layer base {
+    .heroes__card .heroes__card-summary {
+        @apply max-h-screen transition-all duration-500 bg-gray-700 rounded-3xl -mt-10;
+    }
+    .heroes__cards--actions .heroes__card .heroes__card-summary {
+        @apply absolute top-full overflow-hidden max-h-0 box-border py-0 w-full mb-10;
+    }
+    .heroes__cards--actions .heroes__card.hover {
+        @apply z-30;
+    }
+    .heroes__cards--actions .heroes__card:hover {
+        @apply z-50;
+    }
+    .heroes__cards--actions .heroes__card:hover .heroes__card-summary {
+        @apply max-h-screen pb-4 pt-14;
+    }
+    .heroes__cards--processing .heroes__card .heroes__card-summary {
+        @apply static mb-10;
+    }
+    /* h2 {
+    @apply text-xl;
+  } */
+}
+
 @font-face {
     font-family: 'Elephantmen Aged';
     src: url('./fonts/Elephantmen-Aged/Elephantmen-Aged.woff') format('woff');
