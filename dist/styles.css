@@ -745,6 +745,14 @@ video {
   --tw-gradient-to: #000;
 }
 
+.bg-opacity-0 {
+  --tw-bg-opacity: 0;
+}
+
+.bg-opacity-60 {
+  --tw-bg-opacity: 0.6;
+}
+
 .rounded {
   border-radius: 0.25rem;
 }
@@ -757,8 +765,16 @@ video {
   cursor: pointer;
 }
 
+.block {
+  display: block;
+}
+
 .inline-block {
   display: inline-block;
+}
+
+.inline {
+  display: inline;
 }
 
 .flex {
@@ -797,6 +813,10 @@ video {
   justify-content: space-between;
 }
 
+.flex-auto {
+  flex: 1 1 auto;
+}
+
 .flex-grow {
   flex-grow: 1;
 }
@@ -813,9 +833,19 @@ video {
   height: 3.5rem;
 }
 
+.text-lg {
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+}
+
 .text-2xl {
   font-size: 1.5rem;
   line-height: 2rem;
+}
+
+.text-3xl {
+  font-size: 1.875rem;
+  line-height: 2.25rem;
 }
 
 .text-7xl {
@@ -891,6 +921,10 @@ video {
 .focus\:outline-none:focus {
   outline: 2px solid transparent;
   outline-offset: 2px;
+}
+
+.overflow-auto {
+  overflow: auto;
 }
 
 .overflow-hidden {
@@ -979,6 +1013,14 @@ video {
   top: 1rem;
 }
 
+.top-6 {
+  top: 1.5rem;
+}
+
+.right-6 {
+  right: 1.5rem;
+}
+
 .right-10 {
   right: 2.5rem;
 }
@@ -997,6 +1039,11 @@ video {
 
 * {
   --tw-shadow: 0 0 #0000;
+}
+
+.shadow {
+  --tw-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
 
 .shadow-lg {
@@ -1027,6 +1074,11 @@ video {
   color: rgba(0, 0, 0, var(--tw-text-opacity));
 }
 
+.text-white {
+  --tw-text-opacity: 1;
+  color: rgba(255, 255, 255, var(--tw-text-opacity));
+}
+
 .text-gray-400 {
   --tw-text-opacity: 1;
   color: rgba(156, 163, 175, var(--tw-text-opacity));
@@ -1040,6 +1092,11 @@ video {
 .text-blue-100 {
   --tw-text-opacity: 1;
   color: rgba(219, 234, 254, var(--tw-text-opacity));
+}
+
+.hover\:text-gray-100:hover {
+  --tw-text-opacity: 1;
+  color: rgba(243, 244, 246, var(--tw-text-opacity));
 }
 
 .hover\:text-gray-500:hover {
@@ -1099,6 +1156,10 @@ video {
   transition-property: all;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 150ms;
+}
+
+.duration-200 {
+  transition-duration: 200ms;
 }
 
 .duration-300 {

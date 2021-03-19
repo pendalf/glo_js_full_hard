@@ -343,7 +343,7 @@ class Cards {
         cardElement.className = 'heroes__card relative rounded-3xl bg-black bg-opacity-801 bg-gray-700 shadow-lg';
 
         let output = '';
-        output += photo ? `<div class="heroes__card-promo relative overflow-hidden rounded-3xl z-20">` : '';
+        output += photo ? `<div class="heroes__card-promo relative overflow-hidden rounded-3xl z-20 cursor-pointer">` : '';
         output += photo ? `
             <div class="heroes__card-item heroes__card-item--photo overflow-hidden relative" style="padding-bottom: ${this.paddingImg}%">
             ${this.preloaderStar()}
@@ -352,9 +352,9 @@ class Cards {
                 absolute bottom-0 left-0 right-0 text-center text-blue-100 uppercase px-8 pb-4 pt-10
                 bg-gradient-to-b from-transparent via-black to-black divide-y divide-blue-100
             ">` : '<div class="heroes__card-summary pb-4 pt-14 px-8 text-blue-100  divide-y divide-blue-100">';
-        output += name ? `<div class="heroes__card-item heroes__card-item--title py-2">${name}</div>` : '';
+        output += name ? `<div class="heroes__card-item heroes__card-item--title py-2 transition-all duration-200">${name}</div>` : '';
         output += realName ?
-            `<div class="heroes__card-item heroes__card-item--title py-2">${realName}</div>` : '';
+            `<div class="heroes__card-item heroes__card-item--title py-2 transition-all duration-200">${realName}</div>` : '';
         output += photo ? `</div>` : ''; // .heroes__card-promo-summary
         output += photo ? `</div>` : ''; // .heroes__card-promo
 
@@ -453,6 +453,88 @@ class Cards {
         }, 0);
     }
 
+    // определение размера изображения при разворачивании на весь экран
+    popupPhoto(photo) {
+        const windowWidth = document.documentElement.clientWidth * .9,
+            windowHeight = document.documentElement.clientHeight * .9,
+            canvas = photo.querySelector('canvas'),
+            ratio = canvas.width / canvas.height;
+        let width = canvas.width > windowWidth ? windowWidth : canvas.width,
+            height = canvas.width / ratio;
+
+        if (height > windowHeight) {
+            height = windowHeight;
+            width = height * ratio;
+        }
+        const top = (windowHeight / .9 / 2) - (height / 2),
+            left = (windowWidth / .9 / 2) - (width / 2);
+
+        return { width, height, top, left, ratio };
+    }
+
+    // Обработчик клика по картинке
+    photoHandler(photo) {
+        const position = photo.getBoundingClientRect(),
+            wrapper = document.createElement('div'),
+            clone = photo.cloneNode(true);
+
+        clone.originalElement = photo;
+
+        clone.insertAdjacentHTML('beforeend',
+            `<i class="heroes__popup-close far fa-times-circle absolute transition-all duration-200 text-white  hover:text-gray-100 shadow z-20 top-6 right-6 cursor-pointer text-3xl"></i>`
+        );
+
+        const canvas = clone.querySelector('canvas'),
+            img = this.images.get(canvas.dataset.src);
+
+        imageResize({
+            elem: canvas,
+            img,
+            MAX_WIDTH: 1000
+        });
+        clone.style.top = position.top + 'px';
+        clone.style.left = position.left + 'px';
+        clone.style.width = position.width + 'px';
+        clone.position = position;
+        clone.classList.add('duration-200', 'transition-all');
+
+        wrapper.className = 'heroes__popup fixed top-0 left-0 right-0 bottom-0 transition-all duration-200 bg-black bg-opacity-0 z-50';
+        wrapper.append(clone);
+
+        document.body.append(wrapper);
+
+        console.dir(clone);
+
+        setTimeout(() => {
+            const popup = this.popupPhoto(clone);
+            wrapper.classList.add('bg-opacity-60');
+            clone.classList.add('text-lg');
+            clone.style.width = popup.width + 'px';
+            clone.style.height = popup.height + 'px';
+            clone.style.top = popup.top + 'px';
+            clone.style.left = popup.left + 'px';
+            clone.querySelector('.heroes__card-item--photo').style.paddingBottom = (1 / popup.ratio * 100) + '%';
+
+        }, 0);
+    }
+
+    // Закрытие попапа
+    photoCloseHandler(popup) {
+        const photo = popup.querySelector('.heroes__card-promo'),
+            position = photo.originalElement.getBoundingClientRect();
+        popup.classList.remove('bg-opacity-60');
+        photo.classList.add('text-lg');
+        photo.style.width = position.width + 'px';
+        photo.style.height = position.height + 'px';
+        photo.style.top = position.top + 'px';
+        photo.style.left = position.left + 'px';
+        photo.querySelector('.heroes__card-item--photo').style.paddingBottom = this.paddingImg + '%';
+
+        setTimeout(() => {
+            popup.remove();
+        }, 200);
+    }
+
     // Диспетчер событий input
     inputHandler(e) {
         const target = e.target;
@@ -484,6 +566,12 @@ class Cards {
                     this.heroesList.classList.remove('heroes__cards--processing');
                 }, 500);
             }
+        }
+        if (target.closest('.heroes__card-promo') && !target.closest('.heroes__popup')) {
+            this.photoHandler(target.closest('.heroes__card-promo'));
+        }
+        if (target.closest('.heroes__popup-close') || target.classList.contains('heroes__popup')) {
+            this.photoCloseHandler(target.closest('.heroes__popup'));
         }
     }
 
@@ -617,7 +705,7 @@ class Cards {
     handlers() {
         this.cardsContainer.addEventListener('change', this.changeHandler.bind(this));
         this.cardsContainer.addEventListener('input', this.inputHandler.bind(this));
-        this.cardsContainer.addEventListener('click', this.clickHandler.bind(this));
+        document.body.addEventListener('click', this.clickHandler.bind(this));
         this.cardsContainer.addEventListener('load', this.renderCanvas.bind(this), true);
         this.cardsContainer.addEventListener('mouseenter', this.mouseenterHandler.bind(this), true);
         this.cardsContainer.addEventListener('mouseleave', this.mouseleaveHandler.bind(this), true);
