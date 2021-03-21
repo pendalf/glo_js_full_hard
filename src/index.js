@@ -1,3 +1,7 @@
+import './css/style.css';
+
+import imageJpg from './img/house.jpg';
+
 'use strict';
 (() => {
     const btnClick = document.getElementById('click');
@@ -5,4 +9,8 @@
     btnClick.addEventListener('click', () => {
         btnClick.textContent = `Hello ${str}`;
     });
+
+    const block = document.createElement('div');
+    block.innerHTML = `<img src="${imageJpg}">`;
+    document.body.append(block);
 })()

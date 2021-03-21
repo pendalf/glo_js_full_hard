@@ -1,0 +1,23 @@
+@font-face {
+    font-family: 'Fira Sans';
+    src: url('../fonts/firasans-regular.woff2');
+    font-weight: 400;
+}
+
+body {
+    background-color: #ccc;
+    display: flex;
+    min-height: 100vh;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    font-family: 'Fira Sans', sans-serif;
+}
+
+button {
+    padding: 20px 40px;
+    background-color: #030;
+    color: #fff;
+    font-size: 32px;
+    font-family: 'Fira Sans', sans-serif;
+}
