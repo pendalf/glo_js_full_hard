@@ -1,4 +1,6 @@
 import './css/style.css';
+import './scss/style.scss';
+import './index.html';
 
 import imageJpg from './img/house.jpg';
 
