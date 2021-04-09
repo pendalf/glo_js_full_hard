@@ -479,6 +479,7 @@ class Cards {
             clone = photo.cloneNode(true);
 
         clone.originalElement = photo;
+        clone.classList.add('text-base');
 
         clone.insertAdjacentHTML('beforeend',
             `<i class="heroes__popup-close far fa-times-circle absolute transition-all duration-200 text-white  hover:text-gray-100 shadow z-20 top-6 right-6 cursor-pointer text-3xl"></i>`
@@ -503,12 +504,11 @@ class Cards {
 
         document.body.append(wrapper);
 
-        console.dir(clone);
-
         setTimeout(() => {
             const popup = this.popupPhoto(clone);
             wrapper.classList.add('bg-opacity-60');
             clone.classList.add('text-lg');
+            clone.classList.remove('text-base');
             clone.style.width = popup.width + 'px';
             clone.style.height = popup.height + 'px';
             clone.style.top = popup.top + 'px';
@@ -523,7 +523,8 @@ class Cards {
         const photo = popup.querySelector('.heroes__card-promo'),
             position = photo.originalElement.getBoundingClientRect();
         popup.classList.remove('bg-opacity-60');
-        photo.classList.add('text-lg');
+        photo.classList.add('text-base');
+        photo.classList.remove('text-lg');
         photo.style.width = position.width + 'px';
         photo.style.height = position.height + 'px';
         photo.style.top = position.top + 'px';

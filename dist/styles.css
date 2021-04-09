@@ -765,16 +765,8 @@ video {
   cursor: pointer;
 }
 
-.block {
-  display: block;
-}
-
 .inline-block {
   display: inline-block;
-}
-
-.inline {
-  display: inline;
 }
 
 .flex {
@@ -813,10 +805,6 @@ video {
   justify-content: space-between;
 }
 
-.flex-auto {
-  flex: 1 1 auto;
-}
-
 .flex-grow {
   flex-grow: 1;
 }
@@ -831,6 +819,11 @@ video {
 
 .h-14 {
   height: 3.5rem;
+}
+
+.text-base {
+  font-size: 1rem;
+  line-height: 1.5rem;
 }
 
 .text-lg {
@@ -921,10 +914,6 @@ video {
 .focus\:outline-none:focus {
   outline: 2px solid transparent;
   outline-offset: 2px;
-}
-
-.overflow-auto {
-  overflow: auto;
 }
 
 .overflow-hidden {
